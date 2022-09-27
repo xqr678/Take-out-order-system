@@ -3,8 +3,11 @@ package com.heima.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.heima.reggie.common.R;
+import com.heima.reggie.dto.DishDto;
 import com.heima.reggie.dto.SetmealDto;
 import com.heima.reggie.entity.Category;
+import com.heima.reggie.entity.Dish;
+import com.heima.reggie.entity.DishFlavor;
 import com.heima.reggie.entity.Setmeal;
 import com.heima.reggie.service.CategoryService;
 import com.heima.reggie.service.SetmealDishService;
@@ -82,5 +85,15 @@ public class SetmealController {
         return R.success("套餐数据删除成功");
     }
 
+    //    根据条件查询套餐条件
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(Setmeal setmeal) {
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null, Setmeal::getStatus, setmeal.getStatus());
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+        List<Setmeal> list = setmealService.list(queryWrapper);
+        return R.success(list);
+    }
 
 }
