@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,9 +80,11 @@ public class SetmealController {
 
 //    删除套餐
     @DeleteMapping
-    public R<String> delete(@RequestParam List<Long> ids){
+    public R<String> delete(@RequestParam Long[] ids){
         log.info("ids:{}",ids);
-        setmealService.removeWithDish(ids);
+        List<Long> list= Arrays.asList(ids);
+        setmealService.removeByIds(list);
+//        setmealService.removeWithDish(ids);
         return R.success("套餐数据删除成功");
     }
 
@@ -95,5 +98,19 @@ public class SetmealController {
         List<Setmeal> list = setmealService.list(queryWrapper);
         return R.success(list);
     }
+
+    @PostMapping("/status/{status}")
+    public R<String> updateStatus(@PathVariable Integer status,Long[] ids){
+        log.info("根据id修改菜品的状态:{},id为:{}",status,ids);
+        for (int i=0;i<ids.length;i++){
+            Long id=ids[i];
+            Setmeal setmeal=setmealService.getById(id);
+            setmeal.setStatus(status);
+            setmealService.updateById(setmeal);
+        }
+        return R.success("套餐状态修改成功");
+    }
+
+
 
 }

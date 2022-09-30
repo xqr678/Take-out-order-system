@@ -8,6 +8,7 @@ import com.heima.reggie.dto.DishDto;
 import com.heima.reggie.entity.Category;
 import com.heima.reggie.entity.Dish;
 import com.heima.reggie.entity.DishFlavor;
+import com.heima.reggie.entity.Employee;
 import com.heima.reggie.service.CategoryService;
 import com.heima.reggie.service.DishFlavorService;
 import com.heima.reggie.service.DishService;
@@ -16,6 +17,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.lang.model.element.NestingKind;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,6 +142,26 @@ public class DishController {
             return dishDto;
         }).collect(Collectors.toList());
         return R.success(dishDtoList);
+    }
+
+    @PostMapping("/status/{status}")
+    public R<String> updateStatus(@PathVariable Integer status,Long[] ids){
+        log.info("根据id修改菜品的状态:{},id为:{}",status,ids);
+        for (int i=0;i<ids.length;i++){
+            Long id=ids[i];
+            Dish dish=dishService.getById(id);
+            dish.setStatus(status);
+            dishService.updateById(dish);
+        }
+        return R.success("菜品状态修改成功");
+    }
+
+    @DeleteMapping
+    public R<String> delete(Long[] ids){
+        List<Long> list= Arrays.asList(ids);
+        log.info("删除菜品id为:{}",ids);
+        dishService.removeByIds(list);
+        return R.success("菜品删除成功");
     }
 
 
